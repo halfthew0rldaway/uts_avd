@@ -229,44 +229,11 @@
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('import.*') ? 'active' : '' }}" href="{{ route('import.index') }}" id="nav-import">
-                <i class="bi bi-upload"></i> Import Excel
-            </a>
-        </li>
-        <li class="nav-item mt-2">
-            <a class="nav-link collapsed" href="#exportSubmenu" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="exportSubmenu">
-                <i class="bi bi-download"></i> Export Data
-                <i class="bi bi-chevron-down ms-auto" style="font-size: 0.75rem;"></i>
-            </a>
-            <div class="collapse" id="exportSubmenu">
-                <ul class="nav flex-column ms-3" style="border-left: 1px solid rgba(255,255,255,0.1);">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('export.excel') }}">
-                            <i class="bi bi-file-earmark-excel"></i> Export Excel
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('export.pdf') }}">
-                            <i class="bi bi-file-earmark-pdf"></i> Export PDF
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </li>
     </ul>
 </nav>
 
 {{-- Main Content --}}
 <div id="main-content">
-    {{-- Topbar --}}
-    <div id="topbar">
-        <h5>@yield('page-title', 'Dashboard')</h5>
-        <div class="ms-auto text-muted" style="font-size:0.8rem">
-            <i class="bi bi-calendar3 me-1"></i>{{ now()->isoFormat('dddd, D MMMM YYYY') }}
-        </div>
-    </div>
-
     {{-- Flash Messages --}}
     <div class="page-content pb-0">
         @if(session('success'))

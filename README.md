@@ -1,59 +1,88 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Dashboard Analitik Penjualan
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi web analitik dan visualisasi data penjualan, dibangun menggunakan **Laravel 11** dan **Bootstrap 5**. Project ini merupakan pemenuhan tugas Ujian Tengah Semester (UTS) mata kuliah **Analitik dan Visualisasi Data**.
 
-## About Laravel
+## Fitur Utama Sesuai Ketentuan UTS
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+1. **Data Cleaning & Import (`App\Imports\PenjualanImport`)**
+   - Import dataset dari format Excel (`.xlsx`, `.csv`).
+   - Penolakan (Skip) baris data yang mengandung nilai `Null`, kosong, atau tidak lengkap.
+   - Perbaikan dan validasi format tanggal secara otomatis.
+   - Penyeragaman teks pada nama Produk dan Kategori.
+   - Perhitungan ulang dan validasi otomatis nilai total (`jumlah * harga`).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+2. **Data Transformation & Analysis (`App\Http\Controllers\DashboardController`)**
+   - Agregasi nilai menggunakan fungsi `SUM`, `COUNT`, dan `GROUP BY`.
+   - Analisis total penjualan keseluruhan per produk.
+   - Analisis penjualan per produk berdasarkan waktu per minggu.
+   - Analisis penjualan per kategori tiap bulan.
+   - Analisis tren penjualan berdasarkan waktu dan jumlah transaksi.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+3. **Data Visualization (`Chart.js`)**
+   - Line Chart: Tren Penjualan Mingguan.
+   - Bar Chart: Total Penjualan per Produk (Top 10).
+   - Bar Chart: Penjualan Kategori per Bulan.
+   - Pie Chart: Distribusi Kategori Penjualan.
 
-## Learning Laravel
+4. **Export Data**
+   - Export ke format **Excel** menggunakan library `Maatwebsite/Laravel-Excel`.
+   - Export ke format **PDF** menggunakan library `Barryvdh/Laravel-Dompdf`.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Persyaratan Sistem
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP >= 8.2
+- Composer
+- MySQL / MariaDB
 
-## Laravel Sponsors
+## Langkah Instalasi & Setup
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1. **Persiapan Direktori**
+   Pastikan Anda berada di direktori aplikasi Laravel (tempat file `artisan` berada).
 
-### Premium Partners
+2. **Install Dependensi PHP**
+   Jalankan perintah berikut pada terminal:
+   ```bash
+   composer install
+   ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+3. **Setup Environment Variabel**
+   Ubah nama file `.env.example` menjadi `.env` atau jalankan perintah:
+   ```bash
+   cp .env.example .env
+   ```
 
-## Contributing
+4. **Generate Application Key**
+   ```bash
+   php artisan key:generate
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+5. **Setup Database**
+   - Buat database baru di MySQL dengan nama `uts_avd` (atau nama lain).
+   - Buka file `.env`, lalu atur koneksi database:
+     ```env
+     DB_CONNECTION=mysql
+     DB_HOST=127.0.0.1
+     DB_PORT=3306
+     DB_DATABASE=uts_avd
+     DB_USERNAME=root
+     DB_PASSWORD=
+     ```
 
-## Code of Conduct
+6. **Jalankan Migrasi Database**
+   ```bash
+   php artisan migrate
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+7. **Jalankan Server Lokal**
+   ```bash
+   php artisan serve
+   ```
+   Aplikasi dapat diakses melalui browser pada alamat: `http://127.0.0.1:8000`
 
-## Security Vulnerabilities
+## Cara Pengujian Aplikasi
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. Buka `http://127.0.0.1:8000` di browser.
+2. Klik tombol **Import Data** di pojok kanan atas layar Dashboard.
+3. Unggah file dataset Excel/CSV yang diberikan. Sistem otomatis melakukan *cleansing* (mengabaikan baris dengan data yang hilang/null/salah).
+4. Setelah sukses, kembali ke **Dashboard** untuk melihat grafik hasil analisis.
+5. Uji fitur **Export** (Excel & PDF) menggunakan tombol di kanan atas layar.

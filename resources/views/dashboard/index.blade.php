@@ -13,6 +13,38 @@
     .bg-label-info { background-color: rgba(3, 195, 236, 0.16) !important; color: #03c3ec !important; }
 </style>
 
+{{-- Dashboard Header --}}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 mt-2">
+    <div class="mb-3 mb-md-0">
+        <h4 class="mb-1 fw-bold" style="color: var(--bs-heading-color);">Dashboard Analitik Penjualan</h4>
+        <p class="text-muted mb-0" style="font-size: 0.9rem;">
+            <i class="bi bi-calendar3 me-1"></i> {{ now()->isoFormat('dddd, D MMMM YYYY') }}
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ route('import.index') }}" class="btn btn-primary shadow-sm d-flex align-items-center">
+            <i class="bi bi-upload me-2"></i> Import Data
+        </a>
+        <div class="dropdown">
+            <button class="btn btn-white border shadow-sm dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background: white;">
+                <i class="bi bi-download me-2"></i> Export
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                <li>
+                    <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('export.excel') }}">
+                        <i class="bi bi-file-earmark-excel text-success me-2 fs-5"></i> Excel (.xlsx)
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('export.pdf') }}">
+                        <i class="bi bi-file-earmark-pdf text-danger me-2 fs-5"></i> PDF Document
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
 <div class="row g-3 mb-4">
     <div class="col-sm-6 col-xl-3">
         <div class="card stat-card p-3">
@@ -87,7 +119,9 @@
                 <i class="bi bi-graph-up me-1 text-primary"></i> Tren Penjualan Mingguan
             </div>
             <div class="card-body">
-                <canvas id="chartTrenMingguan" height="120"></canvas>
+                <div style="height: 280px; position: relative;">
+                    <canvas id="chartTrenMingguan"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -99,7 +133,9 @@
                 <i class="bi bi-pie-chart me-1 text-success"></i> Distribusi Kategori
             </div>
             <div class="card-body d-flex align-items-center justify-content-center">
-                <canvas id="chartKategori" height="200"></canvas>
+                <div style="height: 250px; position: relative; width: 100%;">
+                    <canvas id="chartKategori"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -114,7 +150,9 @@
                 <i class="bi bi-bar-chart me-1 text-warning"></i> Total Penjualan per Produk (Top 10)
             </div>
             <div class="card-body">
-                <canvas id="chartProduk" height="180"></canvas>
+                <div style="height: 280px; position: relative;">
+                    <canvas id="chartProduk"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -126,7 +164,9 @@
                 <i class="bi bi-bar-chart-steps me-1 text-info"></i> Penjualan Kategori per Bulan
             </div>
             <div class="card-body">
-                <canvas id="chartKategoriBulan" height="180"></canvas>
+                <div style="height: 280px; position: relative;">
+                    <canvas id="chartKategoriBulan"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -233,10 +273,10 @@ new Chart(document.getElementById('chartTrenMingguan'), {
     }
 });
 
-// ===== 2. Doughnut Chart – Distribusi Kategori =====
+// ===== 2. Pie Chart – Distribusi Kategori =====
 const kategoriData = @json($distribusiKategori);
 new Chart(document.getElementById('chartKategori'), {
-    type: 'doughnut',
+    type: 'pie',
     data: {
         labels: kategoriData.map(d => d.kategori),
         datasets: [{
@@ -248,7 +288,7 @@ new Chart(document.getElementById('chartKategori'), {
     },
     options: {
         responsive: true,
-        cutout: '75%', // Thin doughnut ring like Sneat
+        maintainAspectRatio: false,
         plugins: {
             legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { size: 12 } } },
             title: { display: false },
@@ -273,6 +313,7 @@ new Chart(document.getElementById('chartProduk'), {
     },
     options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             legend: { display: false },
             tooltip: { callbacks: { label: ctx => formatRupiah(ctx.parsed.y) }, backgroundColor: '#fff', titleColor: '#566a7f', bodyColor: '#566a7f', borderColor: '#d9dee3', borderWidth: 1 }
@@ -308,6 +349,7 @@ new Chart(document.getElementById('chartKategoriBulan'), {
     data: { labels: bulanSet, datasets: kbDatasets },
     options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } },
             tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${formatRupiah(ctx.parsed.y)}` }, backgroundColor: '#fff', titleColor: '#566a7f', bodyColor: '#566a7f', borderColor: '#d9dee3', borderWidth: 1 }

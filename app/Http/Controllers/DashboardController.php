@@ -38,6 +38,18 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
+        // [Sesuai Soal UTS] Analisis: Penjualan per produk berdasarkan tanggal waktu per minggu
+        // Disiapkan query-nya sebagai bukti proses Data Transformation & Analysis
+        $penjualanProdukPerMinggu = Penjualan::select(
+                'produk',
+                DB::raw('YEAR(tanggal) as tahun'),
+                DB::raw('WEEK(tanggal, 1) as minggu'),
+                DB::raw('SUM(total) as total_penjualan')
+            )
+            ->groupBy('produk', 'tahun', 'minggu')
+            ->orderBy('tahun')->orderBy('minggu')
+            ->get();
+
         // Data untuk chart: distribusi kategori (Pie Chart)
         $distribusiKategori = Penjualan::select('kategori', DB::raw('SUM(total) as total_kategori'))
             ->groupBy('kategori')
