@@ -83,6 +83,6 @@ Aplikasi web analitik dan visualisasi data penjualan, dibangun menggunakan **Lar
 
 1. Buka `http://127.0.0.1:8000` di browser.
 2. Klik tombol **Import Data** di pojok kanan atas layar Dashboard.
-3. Unggah file dataset Excel/CSV yang diberikan. Sistem otomatis melakukan *cleansing* (mengabaikan baris dengan data yang hilang/null/salah).
-4. Setelah sukses, kembali ke **Dashboard** untuk melihat grafik hasil analisis.
-5. Uji fitur **Export** (Excel & PDF) menggunakan tombol di kanan atas layar.
+3. Modal akan muncul. Pilih dan unggah file dataset Excel/CSV yang diberikan. Sistem otomatis melakukan *cleansing* (mengabaikan baris dengan data yang hilang/null/salah).
+4. Setelah proses selesai, Dashboard akan memuat ulang dan menampilkan grafik hasil analisis terbaru.
+5. Uji fitur **Export** (Excel & PDF) menggunakan tombol di kanan atas layar Dashboard.

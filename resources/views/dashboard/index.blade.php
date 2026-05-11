@@ -5,14 +5,6 @@
 
 @section('content')
 
-{{-- Stat Cards --}}
-<style>
-    .bg-label-primary { background-color: rgba(105, 108, 255, 0.16) !important; color: #696cff !important; }
-    .bg-label-success { background-color: rgba(113, 221, 55, 0.16) !important; color: #71dd37 !important; }
-    .bg-label-warning { background-color: rgba(255, 171, 0, 0.16) !important; color: #ffab00 !important; }
-    .bg-label-info { background-color: rgba(3, 195, 236, 0.16) !important; color: #03c3ec !important; }
-</style>
-
 {{-- Dashboard Header --}}
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 mt-2">
     <div class="mb-3 mb-md-0">
@@ -22,9 +14,9 @@
         </p>
     </div>
     <div class="d-flex gap-2">
-        <a href="{{ route('import.index') }}" class="btn btn-primary shadow-sm d-flex align-items-center">
+        <button type="button" class="btn btn-primary shadow-sm d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modalImport">
             <i class="bi bi-upload me-2"></i> Import Data
-        </a>
+        </button>
         <div class="dropdown">
             <button class="btn btn-white border shadow-sm dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background: white;">
                 <i class="bi bi-download me-2"></i> Export
@@ -192,19 +184,27 @@
                 </thead>
                 <tbody>
                     @forelse($recentTransaksi as $item)
+                    @php
+                        $catLower = strtolower($item->kategori);
+                        $badgeClass = 'bg-label-secondary';
+                        if (str_contains($catLower, 'elektronik')) $badgeClass = 'bg-label-warning';
+                        elseif (str_contains($catLower, 'aksesoris')) $badgeClass = 'bg-label-success';
+                        elseif (str_contains($catLower, 'edukasi')) $badgeClass = 'bg-label-primary';
+                        elseif (str_contains($catLower, 'atk')) $badgeClass = 'bg-label-info';
+                    @endphp
                     <tr>
                         <td>{{ $item->tanggal->format('d M Y') }}</td>
                         <td>{{ $item->produk }}</td>
-                        <td><span class="badge bg-secondary">{{ $item->kategori }}</span></td>
+                        <td><span class="badge {{ $badgeClass }}">{{ $item->kategori }}</span></td>
                         <td>{{ number_format($item->jumlah) }}</td>
                         <td>Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
-                        <td class="fw-semibold">Rp {{ number_format($item->total, 0, ',', '.') }}</td>
+                        <td class="fw-semibold text-dark">Rp {{ number_format($item->total, 0, ',', '.') }}</td>
                     </tr>
                     @empty
                     <tr>
                         <td colspan="6" class="text-center text-muted py-4">
                             <i class="bi bi-inbox fs-3 d-block mb-2"></i>
-                            Belum ada data. <a href="{{ route('import.index') }}">Import Excel</a> untuk memulai.
+                            Belum ada data. <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#modalImport">Import Excel</a> untuk memulai.
                         </td>
                     </tr>
                     @endforelse
@@ -217,148 +217,57 @@
 @endsection
 
 @push('scripts')
+<!-- Modal Import -->
+<div class="modal fade" id="modalImport" tabindex="-1" aria-labelledby="modalImportLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold" id="modalImportLabel">
+                    <i class="bi bi-upload text-primary me-2"></i> Import Dataset Penjualan
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <form action="{{ route('import.store') }}" method="POST" enctype="multipart/form-data" id="form-import-modal">
+                    @csrf
+                    <div class="mb-4">
+                        <label for="file" class="form-label fw-semibold mb-2">Pilih File Excel <span class="text-danger">*</span></label>
+                        <input type="file"
+                               class="form-control form-control-lg @error('file') is-invalid @enderror"
+                               id="file"
+                               name="file"
+                               accept=".xlsx,.xls"
+                               required>
+                        @error('file')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <div class="form-text mt-2" style="font-size: 0.85rem;">
+                            <i class="bi bi-info-circle me-1"></i> Format: <strong>.xlsx</strong> / <strong>.xls</strong>. Maks 10 MB.
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg py-2 fw-bold" id="btn-import-modal">
+                            <i class="bi bi-cloud-arrow-up me-2"></i> Mulai Proses Import
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-// ===== Helper =====
-const formatRupiah = (val) => 'Rp ' + new Intl.NumberFormat('id-ID').format(val);
-
-const COLORS = [
-    '#696cff', // Primary
-    '#71dd37', // Success
-    '#03c3ec', // Info
-    '#ffab00', // Warning
-    '#ff3e1d', // Danger
-    '#8592a3', // Secondary
-    '#233446', // Dark
-];
-
-Chart.defaults.font.family = "'Public Sans', sans-serif";
-Chart.defaults.color = '#a1acb8';
-
-// ===== 1. Line Chart – Tren Mingguan =====
-const trenData = @json($trenMingguan);
-const labelsTren = trenData.map(d => `Minggu ${d.minggu} (${d.tahun})`);
-const totalTren  = trenData.map(d => parseFloat(d.total_penjualan));
-
-new Chart(document.getElementById('chartTrenMingguan'), {
-    type: 'line',
-    data: {
-        labels: labelsTren,
-        datasets: [{
-            label: 'Total Penjualan (Rp)',
-            data: totalTren,
-            borderColor: '#ffab00', // Warning color for the line (like Profile Report in Sneat)
-            backgroundColor: 'rgba(255, 171, 0, 0.1)',
-            borderWidth: 3,
-            fill: true,
-            tension: 0.4, // Smooth curve
-            pointRadius: 0, // Hide points by default for a clean look
-            pointHoverRadius: 6,
-            pointBackgroundColor: '#fff',
-            pointBorderColor: '#ffab00',
-            pointBorderWidth: 2,
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { display: false },
-            title: { display: false },
-            tooltip: { callbacks: { label: ctx => formatRupiah(ctx.parsed.y) }, backgroundColor: '#fff', titleColor: '#566a7f', bodyColor: '#566a7f', borderColor: '#d9dee3', borderWidth: 1 }
-        },
-        scales: {
-            x: { grid: { display: false, drawBorder: false }, ticks: { display: false } }, // Hide X axis entirely for a minimal look
-            y: { grid: { display: false, drawBorder: false }, ticks: { display: false } }  // Hide Y axis entirely
+    // Injeksi data dari Laravel ke JavaScript
+    window.dashboardData = {
+        trenMingguan: @json($trenMingguan),
+        distribusiKategori: @json($distribusiKategori),
+        penjualanPerProduk: @json($penjualanPerProduk),
+        kategoriPerBulan: @json($kategoriPerBulan),
+        errors: {
+            file: {{ $errors->has('file') ? 'true' : 'false' }}
         }
-    }
-});
-
-// ===== 2. Pie Chart – Distribusi Kategori =====
-const kategoriData = @json($distribusiKategori);
-new Chart(document.getElementById('chartKategori'), {
-    type: 'pie',
-    data: {
-        labels: kategoriData.map(d => d.kategori),
-        datasets: [{
-            data: kategoriData.map(d => parseFloat(d.total_kategori)),
-            backgroundColor: COLORS,
-            borderWidth: 0,
-            hoverOffset: 4,
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { size: 12 } } },
-            title: { display: false },
-            tooltip: { callbacks: { label: ctx => ` ${formatRupiah(ctx.parsed)}` }, backgroundColor: '#fff', titleColor: '#566a7f', bodyColor: '#566a7f', borderColor: '#d9dee3', borderWidth: 1 }
-        }
-    }
-});
-
-// ===== 3. Bar Chart – Total Penjualan per Produk =====
-const produkData = @json($penjualanPerProduk);
-new Chart(document.getElementById('chartProduk'), {
-    type: 'bar',
-    data: {
-        labels: produkData.map(d => d.produk.length > 15 ? d.produk.substring(0, 15) + '...' : d.produk),
-        datasets: [{
-            label: 'Total Penjualan (Rp)',
-            data: produkData.map(d => parseFloat(d.total_penjualan)),
-            backgroundColor: '#696cff', // Primary color
-            borderRadius: 4, // Rounded bars
-            barThickness: 12, // Thin bars
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { display: false },
-            tooltip: { callbacks: { label: ctx => formatRupiah(ctx.parsed.y) }, backgroundColor: '#fff', titleColor: '#566a7f', bodyColor: '#566a7f', borderColor: '#d9dee3', borderWidth: 1 }
-        },
-        scales: {
-            x: { grid: { display: false, drawBorder: false }, ticks: { font: { size: 11 } } },
-            y: { grid: { color: '#eceef1', borderDash: [5, 5], drawBorder: false }, ticks: { callback: v => 'Rp ' + new Intl.NumberFormat('id-ID').format(v) } }
-        }
-    }
-});
-
-// ===== 4. Bar Chart – Kategori per Bulan =====
-const kbData   = @json($kategoriPerBulan);
-const bulanNames = ['','Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-
-// Susun label bulan unik
-const bulanSet = [...new Set(kbData.map(d => `${bulanNames[d.bulan]} ${d.tahun}`))];
-// Susun dataset per kategori
-const kategoriSet = [...new Set(kbData.map(d => d.kategori))];
-const kbDatasets  = kategoriSet.map((kat, i) => ({
-    label: kat,
-    data: bulanSet.map(bl => {
-        const found = kbData.find(d => `${bulanNames[d.bulan]} ${d.tahun}` === bl && d.kategori === kat);
-        return found ? parseFloat(found.total_kategori) : 0;
-    }),
-    backgroundColor: COLORS[i % COLORS.length],
-    borderRadius: 4,
-    barThickness: 8, // Very thin bars for grouped effect
-}));
-
-new Chart(document.getElementById('chartKategoriBulan'), {
-    type: 'bar',
-    data: { labels: bulanSet, datasets: kbDatasets },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } },
-            tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${formatRupiah(ctx.parsed.y)}` }, backgroundColor: '#fff', titleColor: '#566a7f', bodyColor: '#566a7f', borderColor: '#d9dee3', borderWidth: 1 }
-        },
-        scales: {
-            x: { grid: { display: false, drawBorder: false } },
-            y: { grid: { color: '#eceef1', borderDash: [5, 5], drawBorder: false }, ticks: { callback: v => 'Rp ' + new Intl.NumberFormat('id-ID').format(v) } }
-        }
-    }
-});
+    };
 </script>
+<script src="{{ asset('js/dashboard.js') }}"></script>
 @endpush

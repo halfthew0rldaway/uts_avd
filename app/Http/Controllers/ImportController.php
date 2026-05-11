@@ -8,11 +8,6 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ImportController extends Controller
 {
-    public function index()
-    {
-        return view('penjualan.import');
-    }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -33,9 +28,9 @@ class ImportController extends Controller
                 session()->flash('import_errors', $import->errors);
             }
 
-            return redirect()->route('import.index')->with('success', $pesan);
+            return redirect()->route('dashboard')->with('success', $pesan);
         } catch (\Exception $e) {
-            return redirect()->route('import.index')->with('error', 'Import gagal: ' . $e->getMessage());
+            return redirect()->route('dashboard')->with('error', 'Import gagal: ' . $e->getMessage());
         }
     }
 }

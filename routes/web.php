@@ -12,7 +12,7 @@ Route::get('/', fn() => redirect()->route('dashboard'));
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 // Import Excel
-Route::get('/import',  [ImportController::class, 'index'])->name('import.index');
+Route::get('/import',  fn() => redirect()->route('dashboard'));
 Route::post('/import', [ImportController::class, 'store'])->name('import.store');
 
 // Export
