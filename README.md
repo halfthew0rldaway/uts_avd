@@ -20,9 +20,8 @@ Project ini dikembangkan menggunakan kombinasi teknologi modern untuk menjamin p
 - **Export Engines:** Laravel-Excel (XLSX) & Barryvdh/Laravel-DomPDF (PDF)
 
 ### Frontend (The Interface)
-- **Theming:** Modern Premium Admin Template (Customized Bootstrap 5)
-- **Main Color:** Solid Reddish-Orange Theme (`#ff4d4d`)
-- **Typography:** 'Public Sans' (Google Fonts)
+- **Theming:** [Sneat Admin Template](https://github.com/themeselection/sneat-bootstrap-html-laravel-admin-template-free) (Customized Bootstrap 5)
+- **Typography:** 'Inter' (Primary) & 'JetBrains Mono' (Code Snippets)
 - **Visuals:** [Chart.js v4](https://www.chartjs.org/) (Responsive & Interactive Charts)
 - **Icons:** Bootstrap Icons v1.11.3
 
