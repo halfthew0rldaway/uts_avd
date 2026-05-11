@@ -1,87 +1,87 @@
 # Dashboard Analitik Penjualan – UTS AVD
 
-Project dashboard analitik dan visualisasi data penjualan yang dibangun untuk memenuhi tugas **Ujian Tengah Semester (UTS)** mata kuliah **Analitik dan Visualisasi Data (AVD)**.
+Proyek dashboard analitik dan visualisasi data penjualan ini disusun guna memenuhi persyaratan tugas **Ujian Tengah Semester (UTS)** pada mata kuliah **Analitik dan Visualisasi Data (AVD)**.
 
 **Disusun Oleh:**
 - **Nama:** Wisnu Widya Pradana
 - **NIM:** 411231088
-- **Kampus:** Universitas Dian Nusantara (UNDIRA)
+- **Instansi:** Universitas Dian Nusantara (UNDIRA)
 
 ---
 
-## 🚀 Tech Stack
+## Landasan Teknologi
 
-Project ini dikembangkan menggunakan kombinasi teknologi modern untuk menjamin performa, keamanan data, dan estetika visual yang premium:
+Proyek ini dikembangkan dengan mengintegrasikan berbagai teknologi modern untuk memastikan performa optimal, integritas data, serta estetika visual yang profesional:
 
-### Backend (The Engine)
-- **Framework:** Laravel 11 (PHP 8.2+)
-- **Database:** MySQL / MariaDB (InnoDB Engine)
-- **Data Import:** [Maatwebsite/Laravel-Excel](https://laravel-excel.com/) (dengan integrasi atomic database transactions)
-- **Export Engines:** Laravel-Excel (XLSX) & Barryvdh/Laravel-DomPDF (PDF)
+### Sisi Belakang (Backend)
+- **Kerangka Kerja:** Laravel 11 (PHP 8.2+)
+- **Basis Data:** MySQL / MariaDB (Mesin Penyimpanan InnoDB)
+- **Impor Data:** [Maatwebsite/Laravel-Excel](https://laravel-excel.com/) (mengintegrasikan transaksi basis data atomik)
+- **Mesin Ekspor:** Laravel-Excel (XLSX) dan Barryvdh/Laravel-DomPDF (PDF)
 
-### Frontend (The Interface)
-- **Theming:** [Sneat Admin Template](https://github.com/themeselection/sneat-bootstrap-html-laravel-admin-template-free) (Customized Bootstrap 5)
-- **Typography:** 'Inter' (Primary) & 'JetBrains Mono' (Code Snippets)
-- **Visuals:** [Chart.js v4](https://www.chartjs.org/) (Responsive & Interactive Charts)
-- **Icons:** Bootstrap Icons v1.11.3
-
----
-
-## 🛠️ Fitur Unggulan
-
-### 1. Robust Data Cleansing Pipeline
-Sistem memiliki mekanisme pembersihan data otomatis yang ketat saat proses import:
-- **Atomisitas Data:** Menggunakan `DB::transaction`, menjamin data tidak akan masuk "setengah-setengah" jika terjadi kegagalan file.
-- **Strict Validation:** Mengabaikan (skip) baris dengan produk/tanggal kosong, kuantitas/harga negatif (outliers), atau tanggal di masa depan.
-- **Auto-Repair:** Kategori kosong otomatis diisi sebagai "Tidak Diketahui" dan teks dinormalisasi menggunakan format `Ucwords`.
-- **Recalculation:** Menghitung ulang kolom `total` (`jumlah * harga`) secara internal untuk menjamin akurasi matematis 100%.
-
-### 2. High-Fidelity Analytics
-- **Aggregation Logic:** Menggunakan `YEARWEEK(tanggal, 1)` untuk pengelompokan tren mingguan yang solid (menghindari pemisahan grup saat pergantian tahun).
-- **Multi-Dimensional Insight:** Analisis performa berdasarkan Produk (Top 10), Kategori per Bulan, dan Tren Transaksi Real-time.
-- **Auto-Insight System:** Memberikan ringkasan naratif otomatis mengenai performa penjualan tertinggi di dashboard.
-
-### 3. Professional Reporting
-- **Excel Export:** Menyajikan data mentah hasil cleansing yang siap diolah lebih lanjut.
-- **PDF Export:** Laporan dokumen formal dengan layout tabel yang bersih.
+### Sisi Depan (Frontend)
+- **Tema:** [Sneat Admin Template](https://github.com/themeselection/sneat-bootstrap-html-laravel-admin-template-free) (Bootstrap 5 yang telah disesuaikan)
+- **Tipografi:** 'Inter' (Utama) dan 'JetBrains Mono' (Potongan Kode)
+- **Visualisasi:** [Chart.js v4](https://www.chartjs.org/) (Grafik Responsif dan Interaktif)
+- **Ikon:** Bootstrap Icons v1.11.3
 
 ---
 
-## ⚙️ Langkah Instalasi
+## Fitur Utama
 
-1. **Clone & Install Dependensi**
+### 1. Pipa Pembersihan Data (Data Cleansing Pipeline)
+Sistem menerapkan mekanisme pembersihan data otomatis yang ketat selama proses impor berlangsung:
+- **Atomisitas Data:** Implementasi `DB::transaction` menjamin integritas data; transaksi akan dibatalkan sepenuhnya apabila terjadi kesalahan pada berkas, sehingga mencegah data masuk secara parsial.
+- **Validasi Ketat:** Sistem secara otomatis mengabaikan baris data yang memiliki nilai produk atau tanggal kosong, kuantitas atau harga bernilai negatif, serta tanggal yang melampaui waktu saat ini.
+- **Perbaikan Otomatis:** Kategori yang kosong akan diisi dengan label "Tidak Diketahui" dan teks akan dinormalisasi menggunakan format kapitalisasi standar.
+- **Kalkulasi Ulang:** Kolom total dihitung kembali secara internal berdasarkan perkalian jumlah dan harga untuk menjamin akurasi matematis.
+
+### 2. Analitik Berpresisi Tinggi
+- **Logika Agregasi:** Penggunaan fungsi `YEARWEEK(tanggal, 1)` memastikan pengelompokan tren mingguan tetap konsisten dan tidak terpecah saat terjadi pergantian tahun.
+- **Wawasan Multi-Dimensi:** Penyajian analisis performa berdasarkan Produk Terlaris (Top 10), Distribusi Kategori per Bulan, dan Tren Transaksi secara waktu nyata (real-time).
+- **Sistem Wawasan Otomatis:** Dashboard menyediakan ringkasan naratif otomatis mengenai pencapaian performa penjualan tertinggi.
+
+### 3. Pelaporan Profesional
+- **Ekspor Excel:** Menyediakan data mentah yang telah melalui proses pembersihan sehingga siap untuk diolah kembali.
+- **Ekspor PDF:** Menghasilkan dokumen laporan formal dengan tata letak tabel yang rapi dan sistematis.
+
+---
+
+## Panduan Instalasi
+
+1. **Pemasangan Dependensi**
    ```bash
    composer install
    ```
 
-2. **Setup Environment**
-   - Copy `.env.example` menjadi `.env`.
-   - Konfigurasi `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD`.
-   - Jalankan `php artisan key:generate`.
+2. **Konfigurasi Lingkungan (Environment)**
+   - Salin berkas `.env.example` menjadi `.env`.
+   - Atur konfigurasi pada bagian `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD`.
+   - Jalankan perintah `php artisan key:generate`.
 
-3. **Migrasi Database**
+3. **Migrasi Basis Data**
    ```bash
    php artisan migrate
    ```
 
-4. **Jalankan Aplikasi**
+4. **Menjalankan Aplikasi**
    ```bash
    php artisan serve
    ```
-   Akses melalui browser di: `http://127.0.0.1:8000`
+   Aplikasi dapat diakses melalui peramban pada alamat: `http://127.0.0.1:8000`
 
 ---
 
-## 📂 Struktur Data (Cleansing Logic)
+## Aturan Pembersihan Data (Struktur Data)
 
-| Kolom | Tipe | Aturan Cleansing |
+| Kolom | Tipe Data | Logika Pembersihan |
 | :--- | :--- | :--- |
-| **tanggal** | Date | Parse otomatis, skip jika kosong/future date |
-| **produk** | String | Trim & Normalisasi case, skip jika kosong |
-| **kategori** | String | Default "Tidak Diketahui" jika kosong |
-| **jumlah** | Decimal | Harus > 0, mendukung nilai desimal (timbangan) |
-| **harga** | Decimal | Harus > 0 |
-| **total** | Decimal | Recalculated: `jumlah * harga` |
+| **tanggal** | Date | Penguraian otomatis; baris diabaikan jika kosong atau merupakan tanggal masa depan. |
+| **produk** | String | Penghapusan spasi berlebih dan normalisasi teks; baris diabaikan jika kosong. |
+| **kategori** | String | Diberi nilai bawaan "Tidak Diketahui" apabila kolom kosong. |
+| **jumlah** | Decimal | Harus bernilai positif; mendukung nilai desimal untuk akurasi presisi. |
+| **harga** | Decimal | Harus bernilai positif. |
+| **total** | Decimal | Dihitung ulang melalui rumus: `jumlah * harga`. |
 
 ---
-*Project ini dikembangkan sebagai bukti kompetensi dalam pengolahan, pembersihan, dan visualisasi data menggunakan framework Laravel.*
+*Proyek ini dikembangkan sebagai bukti kompetensi dalam pengolahan, pembersihan, dan visualisasi data menggunakan kerangka kerja Laravel.*
