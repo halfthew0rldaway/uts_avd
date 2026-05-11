@@ -34,81 +34,114 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 3. Chart Configuration
     if (window.dashboardData) {
-        const COLORS = [
-            '#696cff', // Primary
-            '#71dd37', // Success
-            '#03c3ec', // Info
-            '#ffab00', // Warning
-            '#ff3e1d', // Danger
-            '#8592a3', // Secondary
-            '#233446', // Dark
-        ];
+        // High Contrast Palette
+        // Consistent Color Mapping
+        const CATEGORY_COLORS = {
+            'elektronik': '#ff4d4d',   // Primary (Red-Orange)
+            'aksesoris': '#5e72e4',    // Info (Royal Blue)
+            'edukasi': '#ffd600',      // Warning (Yellow)
+            'atk': '#00cfe8',          // Danger (Cyan)
+            'tidak diketahui': '#2dce89' // Success (Vibrant Green)
+        };
+        const DEFAULT_COLOR = '#8592a3';
 
-        Chart.defaults.font.family = "'Public Sans', sans-serif";
-        Chart.defaults.color = '#a1acb8';
-
-        // ===== 1. Line Chart – Tren Mingguan =====
-        const trenData = window.dashboardData.trenMingguan;
-        const labelsTren = trenData.map(d => `Minggu ${d.minggu} (${d.tahun})`);
-        const totalTren  = trenData.map(d => parseFloat(d.total_penjualan));
-
-        const canvasTren = document.getElementById('chartTrenMingguan');
-        if (canvasTren) {
-            new Chart(canvasTren, {
-                type: 'line',
-                data: {
-                    labels: labelsTren,
-                    datasets: [{
-                        label: 'Total Penjualan (Rp)',
-                        data: totalTren,
-                        borderColor: '#ffab00',
-                        backgroundColor: 'rgba(255, 171, 0, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 0,
-                        pointHoverRadius: 6,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#ffab00',
-                        pointBorderWidth: 2,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { callbacks: { label: ctx => formatRupiah(ctx.parsed.y) }, backgroundColor: '#fff', titleColor: '#566a7f', bodyColor: '#566a7f', borderColor: '#d9dee3', borderWidth: 1 }
-                    },
-                    scales: {
-                        x: { grid: { display: false, drawBorder: false }, ticks: { display: false } },
-                        y: { grid: { display: false, drawBorder: false }, ticks: { display: false } }
-                    }
-                }
-            });
+        function getColorForCategory(kategori) {
+            if (!kategori) return DEFAULT_COLOR;
+            const key = kategori.toString().toLowerCase().trim();
+            for (const [cat, color] of Object.entries(CATEGORY_COLORS)) {
+                if (key.includes(cat)) return color;
+            }
+            return DEFAULT_COLOR;
         }
 
-        // ===== 2. Pie Chart – Distribusi Kategori =====
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#566a7f';
+
+        // ===== 1. Line Chart – Tren Mingguan (With Axis Details) =====
+        const trenData = window.dashboardData.trenMingguan;
+        if (trenData && trenData.length > 0) {
+            const labelsTren = trenData.map(d => d.label);
+            const totalTren  = trenData.map(d => parseFloat(d.total_penjualan));
+            const canvasTren = document.getElementById('chartTrenMingguan');
+            if (canvasTren) {
+                new Chart(canvasTren, {
+                    type: 'line',
+                    data: {
+                        labels: labelsTren,
+                        datasets: [{
+                            label: 'Total Penjualan',
+                            data: totalTren,
+                            borderColor: '#ff4d4d',
+                            backgroundColor: 'rgba(255, 77, 77, 0.08)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointHoverRadius: 7,
+                            pointBackgroundColor: '#ff4d4d',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { 
+                                callbacks: { label: ctx => formatRupiah(ctx.parsed.y) }, 
+                                backgroundColor: '#fff', titleColor: '#566a7f', bodyColor: '#566a7f', borderColor: '#d9dee3', borderWidth: 1, padding: 10, displayColors: false
+                            }
+                        },
+                        scales: {
+                            x: { 
+                                grid: { display: false, drawBorder: false }, 
+                                ticks: { font: { size: 10, weight: '500' }, color: '#a1acb8', maxRotation: 0 } 
+                            },
+                            y: { 
+                                grid: { color: '#eceef1', borderDash: [5, 5], drawBorder: false }, 
+                                ticks: { 
+                                    font: { size: 10 }, 
+                                    color: '#a1acb8',
+                                    callback: v => v >= 1000000 ? (v/1000000) + 'Jt' : v
+                                } 
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // ===== 2. Regular Pie Chart – Distribusi Kategori =====
         const kategoriData = window.dashboardData.distribusiKategori;
         const canvasKategori = document.getElementById('chartKategori');
-        if (canvasKategori) {
+        if (canvasKategori && kategoriData && kategoriData.length > 0) {
             new Chart(canvasKategori, {
                 type: 'pie',
                 data: {
                     labels: kategoriData.map(d => d.kategori),
                     datasets: [{
                         data: kategoriData.map(d => parseFloat(d.total_kategori)),
-                        backgroundColor: COLORS,
-                        borderWidth: 0,
-                        hoverOffset: 4,
+                        backgroundColor: kategoriData.map(d => getColorForCategory(d.kategori)),
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverOffset: 8,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { size: 12 } } },
-                        tooltip: { callbacks: { label: ctx => ` ${formatRupiah(ctx.parsed)}` }, backgroundColor: '#fff', titleColor: '#566a7f', bodyColor: '#566a7f', borderColor: '#d9dee3', borderWidth: 1 }
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { 
+                                usePointStyle: true, boxWidth: 10, padding: 20, font: { size: 12, weight: '500' }, color: '#566a7f'
+                            } 
+                        },
+                        tooltip: { 
+                            callbacks: { label: ctx => ` ${formatRupiah(ctx.parsed)}` }, 
+                            backgroundColor: '#fff', titleColor: '#566a7f', bodyColor: '#566a7f', borderColor: '#d9dee3', borderWidth: 1, padding: 12
+                        }
                     }
                 }
             });
@@ -117,17 +150,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // ===== 3. Bar Chart – Total Penjualan per Produk =====
         const produkData = window.dashboardData.penjualanPerProduk;
         const canvasProduk = document.getElementById('chartProduk');
-        if (canvasProduk) {
+        if (canvasProduk && produkData && produkData.length > 0) {
             new Chart(canvasProduk, {
                 type: 'bar',
                 data: {
                     labels: produkData.map(d => d.produk.length > 15 ? d.produk.substring(0, 15) + '...' : d.produk),
                     datasets: [{
-                        label: 'Total Penjualan (Rp)',
+                        label: 'Total Penjualan',
                         data: produkData.map(d => parseFloat(d.total_penjualan)),
-                        backgroundColor: '#696cff',
-                        borderRadius: 4,
-                        barThickness: 12,
+                        backgroundColor: '#ff4d4d',
+                        borderRadius: 5,
+                        barThickness: 15,
                     }]
                 },
                 options: {
@@ -135,11 +168,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
-                        tooltip: { callbacks: { label: ctx => formatRupiah(ctx.parsed.y) }, backgroundColor: '#fff', titleColor: '#566a7f', bodyColor: '#566a7f', borderColor: '#d9dee3', borderWidth: 1 }
+                        tooltip: { 
+                            callbacks: { label: ctx => formatRupiah(ctx.parsed.y) }, 
+                            backgroundColor: '#fff', titleColor: '#566a7f', bodyColor: '#566a7f', borderColor: '#d9dee3', borderWidth: 1, padding: 10
+                        }
                     },
                     scales: {
-                        x: { grid: { display: false, drawBorder: false }, ticks: { font: { size: 11 } } },
-                        y: { grid: { color: '#eceef1', borderDash: [5, 5], drawBorder: false }, ticks: { callback: v => 'Rp ' + new Intl.NumberFormat('id-ID').format(v) } }
+                        x: { grid: { display: false, drawBorder: false }, ticks: { font: { size: 11, weight: '500' }, color: '#566a7f' } },
+                        y: { grid: { color: '#eceef1', borderDash: [5, 5], drawBorder: false }, ticks: { font: { size: 11 }, color: '#a1acb8', callback: v => v >= 1000000 ? (v/1000000) + 'Jt' : v } }
                     }
                 }
             });
@@ -150,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const bulanNames = ['','Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
         const canvasKB = document.getElementById('chartKategoriBulan');
         
-        if (canvasKB && kbData.length > 0) {
+        if (canvasKB && kbData && kbData.length > 0) {
             const bulanSet = [...new Set(kbData.map(d => `${bulanNames[d.bulan]} ${d.tahun}`))];
             const kategoriSet = [...new Set(kbData.map(d => d.kategori))];
             const kbDatasets  = kategoriSet.map((kat, i) => ({
@@ -159,9 +195,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     const found = kbData.find(d => `${bulanNames[d.bulan]} ${d.tahun}` === bl && d.kategori === kat);
                     return found ? parseFloat(found.total_kategori) : 0;
                 }),
-                backgroundColor: COLORS[i % COLORS.length],
-                borderRadius: 4,
-                barThickness: 8,
+                backgroundColor: getColorForCategory(kat),
+                borderRadius: 5,
+                barThickness: 10,
             }));
 
             new Chart(canvasKB, {
@@ -171,12 +207,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } },
-                        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${formatRupiah(ctx.parsed.y)}` }, backgroundColor: '#fff', titleColor: '#566a7f', bodyColor: '#566a7f', borderColor: '#d9dee3', borderWidth: 1 }
+                        legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: { size: 11, weight: '500' }, color: '#566a7f' } },
+                        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${formatRupiah(ctx.parsed.y)}` }, backgroundColor: '#fff', titleColor: '#566a7f', bodyColor: '#566a7f', borderColor: '#d9dee3', borderWidth: 1, padding: 10 }
                     },
                     scales: {
-                        x: { grid: { display: false, drawBorder: false } },
-                        y: { grid: { color: '#eceef1', borderDash: [5, 5], drawBorder: false }, ticks: { callback: v => 'Rp ' + new Intl.NumberFormat('id-ID').format(v) } }
+                        x: { grid: { display: false, drawBorder: false }, ticks: { font: { weight: '500' }, color: '#566a7f' } },
+                        y: { grid: { color: '#eceef1', borderDash: [5, 5], drawBorder: false }, ticks: { font: { size: 11 }, color: '#a1acb8', callback: v => v >= 1000000 ? (v/1000000) + 'Jt' : v } }
                     }
                 }
             });

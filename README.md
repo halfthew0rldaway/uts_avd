@@ -1,88 +1,88 @@
-# Dashboard Analitik Penjualan
+# Dashboard Analitik Penjualan – UTS AVD
 
-Aplikasi web analitik dan visualisasi data penjualan, dibangun menggunakan **Laravel 11** dan **Bootstrap 5**. Project ini merupakan pemenuhan tugas Ujian Tengah Semester (UTS) mata kuliah **Analitik dan Visualisasi Data**.
+Project dashboard analitik dan visualisasi data penjualan yang dibangun untuk memenuhi tugas **Ujian Tengah Semester (UTS)** mata kuliah **Analitik dan Visualisasi Data (AVD)**.
 
-## Fitur Utama Sesuai Ketentuan UTS
+**Disusun Oleh:**
+- **Nama:** Wisnu Widya Pradana
+- **NIM:** 411231088
+- **Kampus:** Universitas Dian Nusantara (UNDIRA)
 
-1. **Data Cleaning & Import (`App\Imports\PenjualanImport`)**
-   - Import dataset dari format Excel (`.xlsx`, `.csv`).
-   - Penolakan (Skip) baris data yang mengandung nilai `Null`, kosong, atau tidak lengkap.
-   - Perbaikan dan validasi format tanggal secara otomatis.
-   - Penyeragaman teks pada nama Produk dan Kategori.
-   - Perhitungan ulang dan validasi otomatis nilai total (`jumlah * harga`).
+---
 
-2. **Data Transformation & Analysis (`App\Http\Controllers\DashboardController`)**
-   - Agregasi nilai menggunakan fungsi `SUM`, `COUNT`, dan `GROUP BY`.
-   - Analisis total penjualan keseluruhan per produk.
-   - Analisis penjualan per produk berdasarkan waktu per minggu.
-   - Analisis penjualan per kategori tiap bulan.
-   - Analisis tren penjualan berdasarkan waktu dan jumlah transaksi.
+## 🚀 Tech Stack
 
-3. **Data Visualization (`Chart.js`)**
-   - Line Chart: Tren Penjualan Mingguan.
-   - Bar Chart: Total Penjualan per Produk (Top 10).
-   - Bar Chart: Penjualan Kategori per Bulan.
-   - Pie Chart: Distribusi Kategori Penjualan.
+Project ini dikembangkan menggunakan kombinasi teknologi modern untuk menjamin performa, keamanan data, dan estetika visual yang premium:
 
-4. **Export Data**
-   - Export ke format **Excel** menggunakan library `Maatwebsite/Laravel-Excel`.
-   - Export ke format **PDF** menggunakan library `Barryvdh/Laravel-Dompdf`.
+### Backend (The Engine)
+- **Framework:** Laravel 11 (PHP 8.2+)
+- **Database:** MySQL / MariaDB (InnoDB Engine)
+- **Data Import:** [Maatwebsite/Laravel-Excel](https://laravel-excel.com/) (dengan integrasi atomic database transactions)
+- **Export Engines:** Laravel-Excel (XLSX) & Barryvdh/Laravel-DomPDF (PDF)
 
-## Persyaratan Sistem
+### Frontend (The Interface)
+- **Theming:** Modern Premium Admin Template (Customized Bootstrap 5)
+- **Main Color:** Solid Reddish-Orange Theme (`#ff4d4d`)
+- **Typography:** 'Public Sans' (Google Fonts)
+- **Visuals:** [Chart.js v4](https://www.chartjs.org/) (Responsive & Interactive Charts)
+- **Icons:** Bootstrap Icons v1.11.3
 
-- PHP >= 8.2
-- Composer
-- MySQL / MariaDB
+---
 
-## Langkah Instalasi & Setup
+## 🛠️ Fitur Unggulan
 
-1. **Persiapan Direktori**
-   Pastikan Anda berada di direktori aplikasi Laravel (tempat file `artisan` berada).
+### 1. Robust Data Cleansing Pipeline
+Sistem memiliki mekanisme pembersihan data otomatis yang ketat saat proses import:
+- **Atomisitas Data:** Menggunakan `DB::transaction`, menjamin data tidak akan masuk "setengah-setengah" jika terjadi kegagalan file.
+- **Strict Validation:** Mengabaikan (skip) baris dengan produk/tanggal kosong, kuantitas/harga negatif (outliers), atau tanggal di masa depan.
+- **Auto-Repair:** Kategori kosong otomatis diisi sebagai "Tidak Diketahui" dan teks dinormalisasi menggunakan format `Ucwords`.
+- **Recalculation:** Menghitung ulang kolom `total` (`jumlah * harga`) secara internal untuk menjamin akurasi matematis 100%.
 
-2. **Install Dependensi PHP**
-   Jalankan perintah berikut pada terminal:
+### 2. High-Fidelity Analytics
+- **Aggregation Logic:** Menggunakan `YEARWEEK(tanggal, 1)` untuk pengelompokan tren mingguan yang solid (menghindari pemisahan grup saat pergantian tahun).
+- **Multi-Dimensional Insight:** Analisis performa berdasarkan Produk (Top 10), Kategori per Bulan, dan Tren Transaksi Real-time.
+- **Auto-Insight System:** Memberikan ringkasan naratif otomatis mengenai performa penjualan tertinggi di dashboard.
+
+### 3. Professional Reporting
+- **Excel Export:** Menyajikan data mentah hasil cleansing yang siap diolah lebih lanjut.
+- **PDF Export:** Laporan dokumen formal dengan layout tabel yang bersih.
+
+---
+
+## ⚙️ Langkah Instalasi
+
+1. **Clone & Install Dependensi**
    ```bash
    composer install
    ```
 
-3. **Setup Environment Variabel**
-   Ubah nama file `.env.example` menjadi `.env` atau jalankan perintah:
-   ```bash
-   cp .env.example .env
-   ```
+2. **Setup Environment**
+   - Copy `.env.example` menjadi `.env`.
+   - Konfigurasi `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD`.
+   - Jalankan `php artisan key:generate`.
 
-4. **Generate Application Key**
-   ```bash
-   php artisan key:generate
-   ```
-
-5. **Setup Database**
-   - Buat database baru di MySQL dengan nama `uts_avd` (atau nama lain).
-   - Buka file `.env`, lalu atur koneksi database:
-     ```env
-     DB_CONNECTION=mysql
-     DB_HOST=127.0.0.1
-     DB_PORT=3306
-     DB_DATABASE=uts_avd
-     DB_USERNAME=root
-     DB_PASSWORD=
-     ```
-
-6. **Jalankan Migrasi Database**
+3. **Migrasi Database**
    ```bash
    php artisan migrate
    ```
 
-7. **Jalankan Server Lokal**
+4. **Jalankan Aplikasi**
    ```bash
    php artisan serve
    ```
-   Aplikasi dapat diakses melalui browser pada alamat: `http://127.0.0.1:8000`
+   Akses melalui browser di: `http://127.0.0.1:8000`
 
-## Cara Pengujian Aplikasi
+---
 
-1. Buka `http://127.0.0.1:8000` di browser.
-2. Klik tombol **Import Data** di pojok kanan atas layar Dashboard.
-3. Modal akan muncul. Pilih dan unggah file dataset Excel/CSV yang diberikan. Sistem otomatis melakukan *cleansing* (mengabaikan baris dengan data yang hilang/null/salah).
-4. Setelah proses selesai, Dashboard akan memuat ulang dan menampilkan grafik hasil analisis terbaru.
-5. Uji fitur **Export** (Excel & PDF) menggunakan tombol di kanan atas layar Dashboard.
+## 📂 Struktur Data (Cleansing Logic)
+
+| Kolom | Tipe | Aturan Cleansing |
+| :--- | :--- | :--- |
+| **tanggal** | Date | Parse otomatis, skip jika kosong/future date |
+| **produk** | String | Trim & Normalisasi case, skip jika kosong |
+| **kategori** | String | Default "Tidak Diketahui" jika kosong |
+| **jumlah** | Decimal | Harus > 0, mendukung nilai desimal (timbangan) |
+| **harga** | Decimal | Harus > 0 |
+| **total** | Decimal | Recalculated: `jumlah * harga` |
+
+---
+*Project ini dikembangkan sebagai bukti kompetensi dalam pengolahan, pembersihan, dan visualisasi data menggunakan framework Laravel.*

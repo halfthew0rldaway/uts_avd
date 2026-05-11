@@ -33,4 +33,10 @@ class ImportController extends Controller
             return redirect()->route('dashboard')->with('error', 'Import gagal: ' . $e->getMessage());
         }
     }
+
+    public function reset()
+    {
+        \App\Models\Penjualan::truncate();
+        return redirect()->route('dashboard')->with('success', 'Seluruh data berhasil dihapus. Sistem siap menerima dataset baru.');
+    }
 }

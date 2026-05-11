@@ -14,6 +14,13 @@
         </p>
     </div>
     <div class="d-flex gap-2">
+        <form action="{{ route('import.reset') }}" method="POST" onsubmit="return confirm('Hapus seluruh data? Tindakan ini tidak bisa dibatalkan.')">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-outline-danger shadow-sm d-flex align-items-center">
+                <i class="bi bi-trash me-2"></i> Reset
+            </button>
+        </form>
         <button type="button" class="btn btn-primary shadow-sm d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modalImport">
             <i class="bi bi-upload me-2"></i> Import Data
         </button>
@@ -187,10 +194,11 @@
                     @php
                         $catLower = strtolower($item->kategori);
                         $badgeClass = 'bg-label-secondary';
-                        if (str_contains($catLower, 'elektronik')) $badgeClass = 'bg-label-warning';
-                        elseif (str_contains($catLower, 'aksesoris')) $badgeClass = 'bg-label-success';
-                        elseif (str_contains($catLower, 'edukasi')) $badgeClass = 'bg-label-primary';
-                        elseif (str_contains($catLower, 'atk')) $badgeClass = 'bg-label-info';
+                        if (str_contains($catLower, 'elektronik')) $badgeClass = 'bg-label-primary';
+                        elseif (str_contains($catLower, 'aksesoris')) $badgeClass = 'bg-label-info';
+                        elseif (str_contains($catLower, 'edukasi')) $badgeClass = 'bg-label-warning';
+                        elseif (str_contains($catLower, 'atk')) $badgeClass = 'bg-label-danger';
+                        elseif (str_contains($catLower, 'tidak diketahui')) $badgeClass = 'bg-label-success';
                     @endphp
                     <tr>
                         <td>{{ $item->tanggal->format('d M Y') }}</td>

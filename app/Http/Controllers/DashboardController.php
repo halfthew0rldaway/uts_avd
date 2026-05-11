@@ -21,33 +21,28 @@ class DashboardController extends Controller
 
         // Data untuk chart: tren mingguan (Line Chart)
         $trenMingguan = Penjualan::select(
-                DB::raw('YEAR(tanggal) as tahun'),
-                DB::raw('WEEK(tanggal, 1) as minggu'),
+                DB::raw('YEARWEEK(tanggal, 1) as period'),
                 DB::raw('SUM(total) as total_penjualan'),
                 DB::raw('COUNT(*) as jumlah_transaksi')
             )
-            ->groupBy('tahun', 'minggu')
-            ->orderBy('tahun')
-            ->orderBy('minggu')
-            ->get();
+            ->groupBy('period')
+            ->orderBy('period')
+            ->get()
+            ->map(function($item) {
+                // Format "202401" -> "2024-W01"
+                $year = substr($item->period, 0, 4);
+                $week = substr($item->period, 4);
+                $item->minggu = $week;
+                $item->tahun = $year;
+                $item->label = $year . '-W' . $week;
+                return $item;
+            });
 
         // Data untuk chart: total penjualan per produk (Bar Chart)
         $penjualanPerProduk = Penjualan::select('produk', DB::raw('SUM(total) as total_penjualan'))
             ->groupBy('produk')
             ->orderByDesc('total_penjualan')
             ->limit(10)
-            ->get();
-
-        // [Sesuai Soal UTS] Analisis: Penjualan per produk berdasarkan tanggal waktu per minggu
-        // Disiapkan query-nya sebagai bukti proses Data Transformation & Analysis
-        $penjualanProdukPerMinggu = Penjualan::select(
-                'produk',
-                DB::raw('YEAR(tanggal) as tahun'),
-                DB::raw('WEEK(tanggal, 1) as minggu'),
-                DB::raw('SUM(total) as total_penjualan')
-            )
-            ->groupBy('produk', 'tahun', 'minggu')
-            ->orderBy('tahun')->orderBy('minggu')
             ->get();
 
         // Data untuk chart: distribusi kategori (Pie Chart)
@@ -79,5 +74,49 @@ class DashboardController extends Controller
             'distribusiKategori',
             'kategoriPerBulan'
         ));
+    }
+
+    public function understanding()
+    {
+        return view('dashboard.understanding');
+    }
+
+    public function insight()
+    {
+        // 1. Total penjualan keseluruhan per produk
+        $produkAnalisis = Penjualan::select('produk', DB::raw('SUM(total) as total_penjualan'), DB::raw('COUNT(*) as qty'))
+            ->groupBy('produk')
+            ->orderByDesc('total_penjualan')
+            ->get();
+
+        // 2. Penjualan produk per minggu
+        $produkMingguan = Penjualan::select(
+                'produk',
+                DB::raw('YEARWEEK(tanggal, 1) as period'),
+                DB::raw('SUM(total) as total_penjualan')
+            )
+            ->groupBy('produk', 'period')
+            ->orderBy('period', 'desc')
+            ->get()
+            ->map(function($item) {
+                $year = substr($item->period, 0, 4);
+                $week = substr($item->period, 4);
+                $item->minggu = $week;
+                $item->tahun = $year;
+                return $item;
+            });
+
+        // 3. Tren Kategori per Bulan
+        $kategoriBulanan = Penjualan::select(
+                'kategori',
+                DB::raw('MONTH(tanggal) as bulan'),
+                DB::raw('YEAR(tanggal) as tahun'),
+                DB::raw('SUM(total) as total_penjualan')
+            )
+            ->groupBy('kategori', 'bulan', 'tahun')
+            ->orderBy('tahun', 'desc')->orderBy('bulan', 'desc')
+            ->get();
+
+        return view('dashboard.insight', compact('produkAnalisis', 'produkMingguan', 'kategoriBulanan'));
     }
 }
