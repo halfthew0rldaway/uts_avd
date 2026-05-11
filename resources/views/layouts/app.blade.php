@@ -82,7 +82,7 @@
 {{-- Global Result Modal (Success/Error/Cleansing) --}}
 @if(session('success') || session('error') || session('import_errors'))
 <div class="modal fade" id="modalResult" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header border-bottom-0 pb-0">
                 <h5 class="modal-title fw-bold">
@@ -111,12 +111,15 @@
 
                 @if(session('import_errors'))
                     <div class="fw-bold mb-2 small text-uppercase text-muted" style="letter-spacing: 1px;">Log Pembersihan Data:</div>
-                    <div class="bg-light rounded-3 p-3 border" style="max-height: 250px; overflow-y: auto;">
-                        <ul class="mb-0 small ps-3 text-secondary">
+                    <div class="bg-light rounded-3 p-3 border" style="max-height: 350px; overflow-y: auto;">
+                        <div class="mb-0 small text-secondary">
                             @foreach(session('import_errors') as $err)
-                                <li class="mb-1">{{ $err }}</li>
+                                <div class="mb-2 d-flex align-items-start">
+                                    <span class="me-2">—</span>
+                                    <span>{{ $err }}</span>
+                                </div>
                             @endforeach
-                        </ul>
+                        </div>
                     </div>
                     <p class="small text-muted mt-3 mb-0" style="font-size: 0.75rem;">
                         <i class="bi bi-shield-lock me-1"></i> Data yang tercatat di atas otomatis dilewati (skipped) untuk menjaga kualitas analitik dashboard.

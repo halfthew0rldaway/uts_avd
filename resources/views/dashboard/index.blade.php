@@ -14,13 +14,9 @@
         </p>
     </div>
     <div class="d-flex gap-2">
-        <form action="{{ route('import.reset') }}" method="POST" onsubmit="return confirm('Hapus seluruh data? Tindakan ini tidak bisa dibatalkan.')">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-outline-danger shadow-sm d-flex align-items-center">
-                <i class="bi bi-trash me-2"></i> Reset
-            </button>
-        </form>
+        <button type="button" class="btn btn-outline-danger shadow-sm d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modalReset">
+            <i class="bi bi-trash me-2"></i> Reset
+        </button>
         <button type="button" class="btn btn-primary shadow-sm d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modalImport">
             <i class="bi bi-upload me-2"></i> Import Data
         </button>
@@ -46,53 +42,53 @@
 
 <div class="row g-3 mb-4">
     <div class="col-sm-6 col-xl-3">
-        <div class="card stat-card p-3">
+        <div class="card h-100 stat-card p-3">
             <div class="d-flex align-items-center gap-3">
                 <div class="icon-box bg-label-primary">
                     <i class="bi bi-receipt"></i>
                 </div>
                 <div>
-                    <div class="text-muted" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.05em">Total Transaksi</div>
-                    <div class="fw-bold fs-4" style="color: var(--bs-heading-color);">{{ number_format($totalTransaksi) }}</div>
+                    <div class="text-muted mb-1" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.05em">Total Transaksi</div>
+                    <div class="fw-bold fs-4" style="color: var(--bs-heading-color); line-height: 1.2;">{{ number_format($totalTransaksi) }}</div>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-sm-6 col-xl-3">
-        <div class="card stat-card p-3">
+        <div class="card h-100 stat-card p-3">
             <div class="d-flex align-items-center gap-3">
                 <div class="icon-box bg-label-success">
                     <i class="bi bi-currency-dollar"></i>
                 </div>
                 <div>
-                    <div class="text-muted" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.05em">Total Penjualan</div>
-                    <div class="fw-bold fs-5" style="color: var(--bs-heading-color);">Rp {{ number_format($totalPenjualan, 0, ',', '.') }}</div>
+                    <div class="text-muted mb-1" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.05em">Total Penjualan</div>
+                    <div class="fw-bold fs-5" style="color: var(--bs-heading-color); line-height: 1.2;">Rp {{ number_format($totalPenjualan, 0, ',', '.') }}</div>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-sm-6 col-xl-3">
-        <div class="card stat-card p-3">
+        <div class="card h-100 stat-card p-3">
             <div class="d-flex align-items-center gap-3">
                 <div class="icon-box bg-label-warning">
                     <i class="bi bi-box-seam"></i>
                 </div>
                 <div>
-                    <div class="text-muted" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.05em">Total Produk</div>
-                    <div class="fw-bold fs-4" style="color: var(--bs-heading-color);">{{ number_format($totalProduk) }}</div>
+                    <div class="text-muted mb-1" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.05em">Total Produk</div>
+                    <div class="fw-bold fs-4" style="color: var(--bs-heading-color); line-height: 1.2;">{{ number_format($totalProduk) }}</div>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-sm-6 col-xl-3">
-        <div class="card stat-card p-3">
+        <div class="card h-100 stat-card p-3">
             <div class="d-flex align-items-center gap-3">
                 <div class="icon-box bg-label-info">
                     <i class="bi bi-trophy"></i>
                 </div>
                 <div>
-                    <div class="text-muted" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.05em">Kategori Terlaris</div>
-                    <div class="fw-bold" style="font-size:.95rem; color: var(--bs-heading-color);">{{ $kategoriTerlaris->kategori ?? '—' }}</div>
+                    <div class="text-muted mb-1" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.05em">Kategori Terlaris</div>
+                    <div class="fw-bold" style="font-size:.95rem; color: var(--bs-heading-color); line-height: 1.2;">{{ $kategoriTerlaris->kategori ?? '—' }}</div>
                 </div>
             </div>
         </div>
@@ -218,6 +214,30 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+{{-- Modal Reset Konfirmasi --}}
+<div class="modal fade" id="modalReset" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-body text-center p-4">
+                <div class="mb-3 text-danger">
+                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="fw-bold mb-2" style="color: var(--bs-heading-color);">Hapus Seluruh Data?</h5>
+                <p class="text-muted small mb-4">Tindakan ini tidak dapat dibatalkan. Seluruh data transaksi akan dihapus secara permanen dari sistem.</p>
+                
+                <div class="d-flex gap-2 justify-content-center">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Batal</button>
+                    <form action="{{ route('import.reset') }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger px-4">Ya, Hapus</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
