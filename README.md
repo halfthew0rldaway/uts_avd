@@ -5,7 +5,7 @@ Proyek dashboard analitik dan visualisasi data penjualan ini disusun guna memenu
 **Disusun Oleh:**
 - **Nama:** Wisnu Widya Pradana
 - **NIM:** 411231088
-- **Instansi:** Universitas Dian Nusantara (UNDIRA)
+- **Kampus:** Universitas Dian Nusantara (UNDIRA)
 
 ---
 
@@ -84,4 +84,4 @@ Sistem menerapkan mekanisme pembersihan data otomatis yang ketat selama proses i
 | **total** | Decimal | Dihitung ulang melalui rumus: `jumlah * harga`. |
 
 ---
-*Proyek ini dikembangkan sebagai bukti kompetensi dalam pengolahan, pembersihan, dan visualisasi data menggunakan framework Laravel.*
+**sql script data yang sudah dibersihkan dan sql script cleansing sudah disertakan**
