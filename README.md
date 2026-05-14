@@ -9,6 +9,19 @@ Proyek dashboard analitik dan visualisasi data penjualan ini disusun guna memenu
 
 ---
 
+## Tampilan Aplikasi
+
+### Dashboard Utama
+![Dashboard Utama](screenshots/dashboard.png)
+
+### Data Understanding
+![Data Understanding](screenshots/understanding.png)
+
+### Data Analysis & Insight
+![Data Analysis](screenshots/data-analisis.png)
+
+---
+
 ## Tech Stack
 
 Proyek ini dikembangkan dengan mengintegrasikan berbagai teknologi untuk memastikan performa optimal, integritas data, serta estetika visual yang profesional:
